@@ -3,7 +3,7 @@
     "settings": {
       "actorTypes": {
         "name": "Actor Types",
-        "hint": "Comma-separated list of actor types to monitor (e.g. character,npc). Leave empty to monitor all."
+        "hint": "Actor types to monitor. Leave empty to monitor all."
       },
       "tokenDisposition": {
         "name": "Token Disposition",
