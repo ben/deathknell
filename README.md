@@ -22,7 +22,7 @@ When **HP Data Path** is empty, Deathknell tries `system.attributes.hp.value`, `
 ## Installation
 
 1. In Foundry, open **Configuration and Setup → Add-on Modules → Install Module**.
-2. Paste the manifest URL: `https://github.com/bstraub/deathknell/releases/latest/download/module.json`
+2. Paste the manifest URL: `https://github.com/ben/deathknell/releases/latest/download/module.json`
 3. Enable the module in your world under **Manage Modules**.
 
 Requires Foundry core **v14**.

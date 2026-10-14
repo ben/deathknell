@@ -34,10 +34,10 @@
   "media": [
     {
       "type": "cover",
-      "url": "https://raw.githubusercontent.com/bstraub/deathknell/main/.github/cover.png"
+      "url": "https://raw.githubusercontent.com/ben/deathknell/main/.github/cover.png"
     }
   ],
-  "url": "https://github.com/bstraub/deathknell",
-  "manifest": "https://github.com/bstraub/deathknell/releases/latest/download/module.json",
-  "download": "https://github.com/bstraub/deathknell/releases/download/v0.1.0/deathknell.zip"
+  "url": "https://github.com/ben/deathknell",
+  "manifest": "https://github.com/ben/deathknell/releases/latest/download/module.json",
+  "download": "https://github.com/ben/deathknell/releases/download/v0.1.0/deathknell.zip"
 }
