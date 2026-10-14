@@ -1,80 +1,83 @@
 /**
- * updateActor hook handler. Applies the "ioun stone" Token Magic effect to an
- * actor's tokens while its HP is at or below the threshold, and removes it
- * when the HP rises back above.
+ * updateActor hook handler. Applies the "death knell" Token Magic effect — a
+ * trio of glowing bells circling the token — to an actor's tokens while its HP
+ * is at or below the threshold, and removes it when the HP rises back above.
  */
 
 import { resolveHP, resolveHPPath, hpChanged } from "./hp.js";
 
-/** Filter id used for the ioun stone effect; re-adding with the same id replaces it. */
-const FILTER_ID = "deathknell-ioun-stone";
+/** Filter id used for the bells effect; re-adding with the same id replaces it. */
+const FILTER_ID = "deathknell-bells";
 
-/** The Token Magic parameters for the ioun stone effect. */
-const IOUN_STONE_PARAMS = [
-  {
-    filterType: "sprite",
-    filterId: FILTER_ID,
-    imagePath: "modules/tokenmagic/fx/assets/gem-2.png",
-    gridPadding: 1,
-    scaleX: 0.2,
-    scaleY: 0.2,
-    colorize: true,
-    color: 0xffbb00,
-    inverse: false,
-    top: true,
-    animated: {
-      rotation: {
-        active: true,
-        clockWise: false,
-        loopDuration: 2000,
-        animType: "syncRotation",
-      },
-      translationX: {
-        active: true,
-        animType: "cosOscillation",
-        val1: 2.0,
-        val2: -2.0,
-        loopDuration: 4000,
-      },
-      translationY: {
-        active: true,
-        animType: "sinOscillation",
-        val1: 2.0,
-        val2: -2.0,
-        loopDuration: 4000,
-      },
-      color: {
-        active: true,
-        animType: "colorOscillation",
-        val1: 0xffff00,
-        val2: 0x00ffff,
-        loopDuration: 4000,
-      },
+/** Orbit shared by the three bells: radius (grid units) and time per revolution (ms). */
+const ORBIT_RADIUS = 2.0;
+const ORBIT_PERIOD = 10000;
+
+/**
+ * The Token Magic parameters for the bells effect: three identical sprites
+ * sharing one orbit, offset a third of a revolution apart so they ring the
+ * token evenly. `syncShift` is a phase in fractions of a loop, which is what
+ * spaces the bells without desyncing their rotation.
+ */
+const BELL_FILTER_PARAMS = [0, 1 / 3, 2 / 3].map((phase) => ({
+  filterType: "sprite",
+  filterId: FILTER_ID,
+  imagePath: "modules/deathknell/assets/bell_flat.png",
+  gridPadding: 1,
+  scaleX: 0.2,
+  scaleY: 0.2,
+  colorize: true,
+  color: 0xffc84a,
+  inverse: false,
+  top: true,
+  animated: {
+    translationX: {
+      active: true,
+      animType: "cosOscillation",
+      val1: ORBIT_RADIUS,
+      val2: -ORBIT_RADIUS,
+      loopDuration: ORBIT_PERIOD,
+      syncShift: phase,
+    },
+    translationY: {
+      active: true,
+      animType: "sinOscillation",
+      val1: ORBIT_RADIUS,
+      val2: -ORBIT_RADIUS,
+      loopDuration: ORBIT_PERIOD,
+      syncShift: phase,
+    },
+    color: {
+      active: true,
+      animType: "colorOscillation",
+      val1: 0xffd75e,
+      val2: 0xfff3c8,
+      loopDuration: 4000,
     },
   },
-];
+}));
 
 /** Warn about an unresolvable HP path once per actor. */
 const warnedActors = new Set();
 
-/** Actor ids currently showing the ioun stone effect, to avoid stacking duplicates. */
+/** Actor ids currently showing the bells effect, to avoid stacking duplicates. */
 const flaggedActors = new Set();
 
 /**
- * Apply the ioun stone effect to every active token of the actor. Token Magic
- * keys filters by its own internal id, so re-adding stacks duplicates — clear
- * any existing filter first.
+ * Apply the bells effect to every active token of the actor. Token Magic keys
+ * filters by its own internal id, so re-adding stacks duplicates — clear any
+ * existing filter first.
  */
-async function addIounStone(actor) {
+async function addBells(actor) {
   for (const token of actor.getActiveTokens()) {
     await TokenMagic.deleteFilters(token, FILTER_ID);
-    await TokenMagic.addFilters(token, IOUN_STONE_PARAMS);
+    await TokenMagic.addFilters(token, BELL_FILTER_PARAMS);
   }
   flaggedActors.add(actor.id);
 }
 
-/** Remove the ioun stone effect from every active token of the actor. */
-async function removeIounStone(actor) {
+/** Remove the bells effect from every active token of the actor. */
+async function removeBells(actor) {
   for (const token of actor.getActiveTokens()) {
     await TokenMagic.deleteFilters(token, FILTER_ID);
   }
@@ -108,8 +111,8 @@ export async function onActorUpdate(actor, changed) {
     console.log(
       `deathknell | "${actor.name}" (${actor.type}) at ${hp} HP, at or below threshold ${threshold}`
     );
-    await addIounStone(actor);
+    await addBells(actor);
   } else {
-    await removeIounStone(actor);
+    await removeBells(actor);
   }
 }
