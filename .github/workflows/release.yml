@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
 
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
@@ -41,6 +45,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           tag="v${{ steps.version.outputs.version }}"
-          gh release create "$tag" deathknell.zip module.json \
-            --title "$tag" \
-            --generate-notes
+          if gh release view "$tag" > /dev/null 2>&1; then
+            echo "Release $tag already exists, skipping"
+          else
+            gh release create "$tag" deathknell.zip module.json \
+              --title "$tag" \
+              --generate-notes
+          fi
