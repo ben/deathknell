@@ -37,6 +37,10 @@ ln -s ~/Code/deathknell <userData>/Data/modules/deathknell
 
 Restart Foundry (or reload the world with `F5`) after changing source files. No build step — plain ES modules.
 
+## AI disclosure
+
+Parts of this module's code were written with the help of AI (Claude Code). All code has been reviewed by a human before release.
+
 ## License
 
 [MIT](LICENSE)
