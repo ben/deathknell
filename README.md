@@ -4,7 +4,7 @@ A [Foundry Virtual Tabletop](https://foundryvtt.com) module that watches for tok
 
 ## What it does
 
-Deathknell listens for actor updates and, when a monitored token's HP falls to or below the configured threshold, flags the token. In this version the detection is logged to the console only; a visual effect on the token is planned for a future release. Flags clear when the token heals above the threshold.
+Deathknell listens for actor updates and, when an actor's HP falls to or below the configured threshold, marks its tokens with a "death knell" visual effect: a trio of glowing bells circling the token, accompanied by a pulsing dark-red glow. The effect is removed when the actor heals above the threshold. Requires the [Token Magic FX](https://foundryvtt.com/packages/tokenmagic) module.
 
 ## Settings
 
@@ -12,12 +12,14 @@ All settings live under **Configure Settings → Module Settings → Deathknell*
 
 | Setting | Description | Default |
 |---|---|---|
-| Actor Types | Comma-separated allow-list of actor types to monitor | `character,npc` |
-| Token Disposition | Only monitor tokens with this disposition | `any` |
-| HP Threshold | Trigger when HP drops to or below this value | `0` |
+| Actor Types | Multi-select allow-list of actor types to monitor | `character`, `npc` |
+| Token Disposition | Only monitor tokens with this disposition | `hostile` |
+| HP Threshold | Trigger when HP drops to or below this value | `10` |
 | HP Data Path | Dotted path to the system's current HP value; leave empty to auto-detect | *(empty)* |
 
-When **HP Data Path** is empty, Deathknell tries `system.attributes.hp.value`, `system.hp.value`, `system.health.value`, and `system.wounds.value` in order — covering most common systems. If no numeric HP can be resolved for an actor, it logs a one-time warning and ignores that actor.
+When **HP Data Path** is empty, Deathknell tries `system.attributes.hp.value`, `system.hp.value`, `system.health.value`, and `system.wounds.value` in order — covering most common systems. A configured path is tried first, before the heuristics. If no numeric HP can be resolved for an actor, it shows a one-time warning and ignores that actor.
+
+> **Note:** the **Actor Types** and **Token Disposition** settings are registered but not yet enforced — every actor is currently monitored regardless of type or disposition.
 
 ## Installation
 
@@ -25,7 +27,7 @@ When **HP Data Path** is empty, Deathknell tries `system.attributes.hp.value`, `
 2. Paste the manifest URL: `https://github.com/ben/deathknell/releases/latest/download/module.json`
 3. Enable the module in your world under **Manage Modules**.
 
-Requires Foundry core **v14**.
+Requires Foundry core **v14** and the [Token Magic FX](https://foundryvtt.com/packages/tokenmagic) module.
 
 ## Development
 
