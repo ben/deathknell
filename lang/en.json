@@ -1,0 +1,25 @@
+{
+  "deathknell": {
+    "settings": {
+      "actorTypes": {
+        "name": "Actor Types",
+        "hint": "Comma-separated list of actor types to monitor (e.g. character,npc). Leave empty to monitor all."
+      },
+      "tokenDisposition": {
+        "name": "Token Disposition",
+        "hint": "Only monitor tokens with this disposition. Any monitors all."
+      },
+      "hpThreshold": {
+        "name": "HP Threshold",
+        "hint": "Trigger when a token's HP drops to or below this value."
+      },
+      "hpPath": {
+        "name": "HP Data Path",
+        "hint": "Dotted path to the actor's current HP (e.g. system.attributes.hp.value). Leave empty to auto-detect."
+      }
+    },
+    "warnings": {
+      "noHpPath": "Deathknell: could not resolve an HP value for actor \"{name}\". Set the HP Data Path setting to this system's HP location."
+    }
+  }
+}
