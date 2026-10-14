@@ -13,6 +13,14 @@
     "minimum": "14",
     "verified": "14"
   },
+  "relationships": {
+    "requires": [
+      {
+        "id": "tokenmagic",
+        "type": "module"
+      }
+    ]
+  },
   "esmodules": [
     "src/deathknell.js"
   ],
