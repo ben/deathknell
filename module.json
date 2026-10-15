@@ -3,7 +3,7 @@
   "title": "Deathknell",
   "description": "Flag tokens whose HP drops below a configurable threshold.",
   "type": "module",
-  "version": "0.1.3",
+  "version": "1.0.0",
   "authors": [
     {
       "name": "Ben Straub"
