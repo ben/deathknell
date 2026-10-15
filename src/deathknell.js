@@ -4,9 +4,11 @@
  */
 
 import { registerSettings } from "./settings.js";
-import { onActorUpdate } from "./monitor.js";
+import { onActorUpdate, onTokenUpdate, onCombatantUpdate } from "./monitor.js";
 
 Hooks.once("init", () => {
   registerSettings();
   Hooks.on("updateActor", onActorUpdate);
+  Hooks.on("updateToken", onTokenUpdate);
+  Hooks.on("updateActiveCombatant", onCombatantUpdate);
 });

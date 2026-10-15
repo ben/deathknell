@@ -4,7 +4,7 @@ A [Foundry Virtual Tabletop](https://foundryvtt.com) module that watches for tok
 
 ## What it does
 
-Deathknell listens for actor updates and, when an actor's HP falls to or below the configured threshold, marks its tokens with a "death knell" visual effect: a trio of glowing bells circling the token, accompanied by a pulsing dark-red glow. The effect is removed when the actor heals above the threshold. Requires the [Token Magic FX](https://foundryvtt.com/packages/tokenmagic) module.
+Deathknell listens for actor updates and, when an actor's HP falls within the visible window — 1 through the configured threshold, inclusive — marks its tokens with a "death knell" visual effect: a trio of glowing bells circling the token, accompanied by a pulsing dark-red glow. The effect is removed when the actor heals above the threshold, drops to 0 HP or below, or the token is marked dead (the "dead" status effect or defeated in the combat tracker). Requires the [Token Magic FX](https://foundryvtt.com/packages/tokenmagic) module.
 
 ## Settings
 
@@ -14,7 +14,7 @@ All settings live under **Configure Settings → Module Settings → Deathknell*
 |---|---|---|
 | Actor Types | Multi-select allow-list of actor types to monitor | `character`, `npc` |
 | Token Disposition | Only monitor tokens with this disposition | `hostile` |
-| HP Threshold | Trigger when HP drops to or below this value | `10` |
+| HP Threshold | Show the effect while HP is between 1 and this value (inclusive) | `10` |
 | HP Data Path | Dotted path to the system's current HP value; leave empty to auto-detect | *(empty)* |
 
 When **HP Data Path** is empty, Deathknell tries `system.attributes.hp.value`, `system.hp.value`, `system.health.value`, and `system.wounds.value` in order — covering most common systems. A configured path is tried first, before the heuristics. If no numeric HP can be resolved for an actor, it shows a one-time warning and ignores that actor.

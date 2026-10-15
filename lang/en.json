@@ -11,7 +11,7 @@
       },
       "hpThreshold": {
         "name": "HP Threshold",
-        "hint": "Trigger when a token's HP drops to or below this value."
+        "hint": "Show the effect while a token's HP is between 1 and this value (inclusive)."
       },
       "hpPath": {
         "name": "HP Data Path",
