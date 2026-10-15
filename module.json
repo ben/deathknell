@@ -3,7 +3,7 @@
   "title": "Deathknell",
   "description": "Flag tokens whose HP drops below a configurable threshold.",
   "type": "module",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "authors": [
     {
       "name": "Ben Straub"
@@ -39,5 +39,5 @@
   ],
   "url": "https://github.com/ben/deathknell",
   "manifest": "https://github.com/ben/deathknell/releases/latest/download/module.json",
-  "download": "https://github.com/ben/deathknell/releases/download/v0.1.0/deathknell.zip"
+  "download": "https://github.com/ben/deathknell/releases/latest/download/deathknell.zip"
 }
