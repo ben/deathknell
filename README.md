@@ -27,7 +27,7 @@ When **HP Data Path** is empty, Deathknell tries `system.attributes.hp.value`, `
 2. Paste the manifest URL: `https://github.com/ben/deathknell/releases/latest/download/module.json`
 3. Enable the module in your world under **Manage Modules**.
 
-Requires Foundry core **v14** and the [Token Magic FX](https://foundryvtt.com/packages/tokenmagic) module.
+Requires Foundry core **v12** or newer (verified on v14) and the [Token Magic FX](https://foundryvtt.com/packages/tokenmagic) module.
 
 ## Development
 
