@@ -4,7 +4,7 @@ A [Foundry Virtual Tabletop](https://foundryvtt.com) module that watches for tok
 
 ## What it does
 
-Deathknell listens for actor updates and, when an actor's HP falls within the visible window — 1 through the configured threshold, inclusive — marks its tokens with a "death knell" visual effect: a trio of glowing bells circling the token, accompanied by a pulsing dark-red glow. The effect is removed when the actor heals above the threshold, drops to 0 HP or below, or the token is marked dead (the "dead" status effect or defeated in the combat tracker). Requires the [Token Magic FX](https://foundryvtt.com/packages/tokenmagic) module.
+Deathknell listens for actor updates and, when an actor's HP falls within the visible window — 1 through the configured threshold, inclusive — marks its tokens with a "death knell" visual effect: a ring of glowing bells circling the token (three on a 1x1 token, growing with the token's size), accompanied by a pulsing dark-red glow. The effect is removed when the actor heals above the threshold, drops to 0 HP or below, or the token is marked dead (the "dead" status effect or defeated in the combat tracker). Requires the [Token Magic FX](https://foundryvtt.com/packages/tokenmagic) module.
 
 ## Settings
 

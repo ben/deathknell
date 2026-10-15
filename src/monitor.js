@@ -5,13 +5,10 @@
  */
 
 import { resolveHP, resolveHPPath, hpChanged } from "./hp.js";
-import { FILTER_ID, FILTER_PARAMS } from "./effect.js";
+import { FILTER_ID, buildFilterParams } from "./effect.js";
 
 /** Warn about an unresolvable HP path once per actor. */
 const warnedActors = new Set();
-
-/** Token ids currently showing the effect, to avoid stacking duplicates. */
-const flaggedTokens = new Set();
 
 /**
  * Whether the actor's HP is in the window that shows the effect: 1 through
@@ -57,7 +54,10 @@ function effectVisible(doc) {
 /**
  * Bring one token in line with the current visibility rules. Token Magic keys
  * filters by its own internal id, so re-adding stacks duplicates — clear any
- * existing filter first.
+ * existing filter first. Removal is gated on the token's persisted Token Magic
+ * flags (not module-side bookkeeping), so filters that arrived by other means
+ * — most notably loaded with the scene from a previous session — are still
+ * cleaned up.
  *
  * @param {Token} token  The token placeable to sync.
  */
@@ -67,9 +67,8 @@ async function syncToken(token) {
 
   if (visible) {
     await TokenMagic.deleteFilters(token, FILTER_ID);
-    await TokenMagic.addFilters(token, FILTER_PARAMS);
-    flaggedTokens.add(doc.id);
-  } else if (flaggedTokens.delete(doc.id)) {
+    await TokenMagic.addFilters(token, buildFilterParams(doc));
+  } else if (TokenMagic.hasFilterId(token, FILTER_ID)) {
     await TokenMagic.deleteFilters(token, FILTER_ID);
   }
 }
