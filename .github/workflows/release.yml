@@ -14,6 +14,9 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.changed.outputs.changed }}
+      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -52,3 +55,12 @@ jobs:
               --title "$tag" \
               --generate-notes
           fi
+
+  publish-foundry:
+    needs: release
+    if: needs.release.outputs.changed == 'true'
+    uses: ./.github/workflows/publish-foundry.yml
+    with:
+      tag: v${{ needs.release.outputs.version }}
+    secrets:
+      FOUNDRY_TOKEN: ${{ secrets.FOUNDRY_TOKEN }}

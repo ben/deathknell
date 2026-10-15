@@ -1,0 +1,100 @@
+name: Publish to FoundryVTT
+
+on:
+  release:
+    types: [published]
+  workflow_call:
+    inputs:
+      tag:
+        required: true
+        type: string
+      dry-run:
+        required: false
+        type: boolean
+        default: false
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to publish (e.g. v1.0.0)
+        required: true
+        type: string
+      dry-run:
+        description: Validate against the API without saving
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: publish-foundry
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    if: github.repository == 'ben/deathknell'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.event.release.tag_name }}
+
+      - name: Read manifest
+        id: manifest
+        run: |
+          jq -r '
+            "id=" + .id,
+            "version=" + .version,
+            "minimum=" + .compatibility.minimum,
+            "verified=" + .compatibility.verified,
+            "maximum=" + (.compatibility.maximum // "")
+          ' module.json >> "$GITHUB_OUTPUT"
+
+      - name: Publish release
+        env:
+          FOUNDRY_TOKEN: ${{ secrets.FOUNDRY_TOKEN }}
+          TAG: ${{ inputs.tag || github.event.release.tag_name }}
+          DRY_RUN: ${{ inputs.dry-run == true }}
+        run: |
+          version="${{ steps.manifest.outputs.version }}"
+          if [ "${TAG#v}" != "$version" ]; then
+            echo "Tag $TAG does not match manifest version $version" >&2
+            exit 1
+          fi
+          if [ -z "$FOUNDRY_TOKEN" ]; then
+            echo "FOUNDRY_TOKEN secret is not set" >&2
+            exit 1
+          fi
+          payload=$(jq -n \
+            --arg id "${{ steps.manifest.outputs.id }}" \
+            --argjson dry_run "$DRY_RUN" \
+            --arg version "$version" \
+            --arg manifest "https://github.com/${{ github.repository }}/releases/download/${TAG}/module.json" \
+            --arg notes "https://github.com/${{ github.repository }}/releases/tag/${TAG}" \
+            --arg minimum "${{ steps.manifest.outputs.minimum }}" \
+            --arg verified "${{ steps.manifest.outputs.verified }}" \
+            --arg maximum "${{ steps.manifest.outputs.maximum }}" \
+            '{
+              id: $id,
+              "dry-run": $dry_run,
+              release: {
+                version: $version,
+                manifest: $manifest,
+                notes: $notes,
+                compatibility: {
+                  minimum: $minimum,
+                  verified: $verified,
+                  maximum: $maximum
+                }
+              }
+            }')
+          response=$(curl -sSf -X POST \
+            "https://foundryvtt.com/_api/packages/release_version/" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: $FOUNDRY_TOKEN" \
+            -d "$payload")
+          echo "$response"
+          status=$(echo "$response" | jq -r '.status')
+          if [ "$status" != "success" ]; then
+            exit 1
+          fi
