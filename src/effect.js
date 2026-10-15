@@ -78,7 +78,7 @@ function bellFilterParams(doc) {
   return [...Array(count).keys()].map((i) => i / count).map((phase) => ({
     filterType: "sprite",
     filterId: FILTER_ID,
-    imagePath: "modules/deathknell/assets/bell_flat.png",
+    imagePath: "modules/deathknell/assets/bell_flat.webp",
     gridPadding,
     scaleX,
     scaleY,
