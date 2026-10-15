@@ -10,9 +10,10 @@
     }
   ],
   "compatibility": {
-    "minimum": "14",
+    "minimum": "12",
     "verified": "14"
   },
+  "license": "LICENSE",
   "relationships": {
     "requires": [
       {
@@ -34,7 +35,7 @@
   "media": [
     {
       "type": "cover",
-      "url": "https://raw.githubusercontent.com/ben/deathknell/main/.github/cover.png"
+      "url": "https://raw.githubusercontent.com/ben/deathknell/main/.github/cover.webp"
     }
   ],
   "url": "https://github.com/ben/deathknell",
