@@ -6,8 +6,8 @@
         "hint": "Actor types to monitor. Leave empty to monitor all."
       },
       "tokenDisposition": {
-        "name": "Token Disposition",
-        "hint": "Only monitor tokens with this disposition. Any monitors all."
+        "name": "Token Dispositions",
+        "hint": "Token dispositions to monitor. Leave empty to monitor all."
       },
       "hpThreshold": {
         "name": "HP Threshold",

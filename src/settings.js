@@ -2,7 +2,12 @@
  * Module settings registration.
  */
 
-const DEFAULT_ACTOR_TYPES = ["character", "npc"];
+const DISPOSITION_CHOICES = {
+  hostile: "Hostile",
+  neutral: "Neutral",
+  friendly: "Friendly",
+  secret: "Secret"
+};
 
 /** Build multi-select choices from the active game system's actor types. */
 function actorTypeChoices() {
@@ -27,7 +32,7 @@ const SETTING = {
     // SetField renders a multi-select in the settings menu; value reads back as a Set
     type: new foundry.data.fields.SetField(
       new foundry.data.fields.StringField({ choices: actorTypeChoices() }),
-      { initial: DEFAULT_ACTOR_TYPES }
+      { initial: [] }
     )
   },
   tokenDisposition: {
@@ -35,15 +40,11 @@ const SETTING = {
     hint: "deathknell.settings.tokenDisposition.hint",
     scope: "world",
     config: true,
-    type: String,
-    choices: {
-      any: "Any",
-      hostile: "Hostile",
-      neutral: "Neutral",
-      friendly: "Friendly",
-      secret: "Secret"
-    },
-    default: "hostile"
+    // SetField renders a multi-select in the settings menu; value reads back as a Set
+    type: new foundry.data.fields.SetField(
+      new foundry.data.fields.StringField({ choices: DISPOSITION_CHOICES }),
+      { initial: ["hostile"] }
+    )
   },
   hpThreshold: {
     name: "deathknell.settings.hpThreshold.name",

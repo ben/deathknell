@@ -4,7 +4,7 @@ A [Foundry Virtual Tabletop](https://foundryvtt.com) module that watches for tok
 
 ## What it does
 
-Deathknell listens for actor updates and, when an actor's HP falls within the visible window — 1 through the configured threshold, inclusive — marks its tokens with a "death knell" visual effect: a ring of glowing bells circling the token (three on a 1x1 token, growing with the token's size), accompanied by a pulsing dark-red glow. The effect is removed when the actor heals above the threshold, drops to 0 HP or below, or the token is marked dead (the "dead" status effect or defeated in the combat tracker). Requires the [Token Magic FX](https://foundryvtt.com/packages/tokenmagic) module.
+Deathknell listens for actor updates and, when an actor's HP falls within the visible window — 1 through the configured threshold, inclusive — marks its tokens with a "death knell" visual effect: a ring of glowing bells circling the token (three on a 1x1 token, growing with the token's size), accompanied by a pulsing dark-red glow. Only actors whose type is in the **Actor Types** allow-list and whose tokens' disposition is in the **Token Dispositions** allow-list are monitored; an empty allow-list monitors all. The effect is removed when the actor heals above the threshold, drops to 0 HP or below, or the token is marked dead (the "dead" status effect or defeated in the combat tracker). Requires the [Token Magic FX](https://foundryvtt.com/packages/tokenmagic) module.
 
 ## Settings
 
@@ -12,14 +12,14 @@ All settings live under **Configure Settings → Module Settings → Deathknell*
 
 | Setting | Description | Default |
 |---|---|---|
-| Actor Types | Multi-select allow-list of actor types to monitor | `character`, `npc` |
-| Token Disposition | Only monitor tokens with this disposition | `hostile` |
+| Actor Types | Multi-select allow-list of actor types to monitor; leave empty to monitor all | *(empty)* |
+| Token Dispositions | Multi-select allow-list of token dispositions to monitor; leave empty to monitor all | `hostile` |
 | HP Threshold | Show the effect while HP is between 1 and this value (inclusive) | `10` |
 | HP Data Path | Dotted path to the system's current HP value; leave empty to auto-detect | *(empty)* |
 
 When **HP Data Path** is empty, Deathknell tries `system.attributes.hp.value`, `system.hp.value`, `system.health.value`, and `system.wounds.value` in order — covering most common systems. A configured path is tried first, before the heuristics. If no numeric HP can be resolved for an actor, it shows a one-time warning and ignores that actor.
 
-> **Note:** the **Actor Types** and **Token Disposition** settings are registered but not yet enforced — every actor is currently monitored regardless of type or disposition.
+Changes to these settings take effect immediately — tokens are re-synced without needing a reload.
 
 ## Installation
 

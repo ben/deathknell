@@ -1,6 +1,6 @@
 /**
  * Effect lifecycle. Applies the "death knell" effect to tokens whose HP is
- * within the visible window (0 through the threshold, inclusive) while they
+ * within the visible window (1 through the threshold, inclusive) while they
  * are not marked dead, and removes it when either condition stops holding.
  */
 
@@ -9,6 +9,30 @@ import { FILTER_ID, buildFilterParams } from "./effect.js";
 
 /** Warn about an unresolvable HP path once per actor. */
 const warnedActors = new Set();
+
+/**
+ * Normalize a setting value that may read back as a Set (saved through a
+ * SetField menu), a plain array (its initial value), or a single string
+ * (a value saved by a previous version of the setting).
+ */
+function asSet(value) {
+  if (value instanceof Set) return value;
+  if (Array.isArray(value)) return new Set(value);
+  return value ? new Set([value]) : new Set();
+}
+
+/** Whether the actor's type is monitored: membership in the Actor Types allow-list, where an empty list monitors every type. */
+function actorTypeMonitored(actor) {
+  const types = asSet(game.settings.get("deathknell", "actorTypes"));
+  return types.size === 0 || types.has(actor.type);
+}
+
+/** Whether the token's disposition is monitored: membership in the Token Dispositions allow-list, where an empty list monitors every disposition. */
+function tokenDispositionMonitored(doc) {
+  const selected = asSet(game.settings.get("deathknell", "tokenDisposition"));
+  if (selected.size === 0) return true;
+  return [...selected].some((key) => doc.disposition === CONST.TOKEN_DISPOSITIONS[key?.toUpperCase()]);
+}
 
 /**
  * Whether the actor's HP is in the window that shows the effect: 1 through
@@ -48,6 +72,7 @@ function tokenIsDead(doc) {
 function effectVisible(doc) {
   const actor = doc.actor;
   if (!actor) return false;
+  if (!actorTypeMonitored(actor) || !tokenDispositionMonitored(doc)) return false;
   return hpInWindow(actor) && !tokenIsDead(doc);
 }
 
@@ -87,6 +112,8 @@ async function syncActor(actor) {
  * @param {object} changed  The differential data of the update.
  */
 export async function onActorUpdate(actor, changed) {
+  if (!actorTypeMonitored(actor)) return;
+
   const path = resolveHPPath(actor);
   const hp = resolveHP(actor);
 
@@ -106,13 +133,13 @@ export async function onActorUpdate(actor, changed) {
 
 /**
  * updateToken hook handler: re-sync the token when its status effects changed
- * (e.g. the "dead" status was applied or removed).
+ * (e.g. the "dead" status was applied or removed) or its disposition changed.
  *
  * @param {TokenDocument} doc      The updated token document.
  * @param {object}        changed  The differential data of the update.
  */
 export async function onTokenUpdate(doc, changed) {
-  if (changed?.effects === undefined) return;
+  if (changed?.effects === undefined && changed?.disposition === undefined) return;
   const token = doc.object;
   if (token) await syncToken(token);
 }
@@ -128,4 +155,26 @@ export async function onCombatantUpdate(combatant, changed) {
   if (changed?.defeated === undefined) return;
   const token = combatant.token?.object;
   if (token) await syncToken(token);
+}
+
+/** Re-sync every placed token in the active scene. */
+async function syncScene() {
+  for (const token of canvas?.tokens?.placeables ?? []) {
+    await syncToken(token);
+  }
+}
+
+/**
+ * updateSetting hook handler: re-sync the scene's tokens when one of the
+ * module's settings changes, so new filter values apply immediately instead
+ * of waiting for the next matching update.
+ *
+ * World settings are Setting documents, so this fires on every client with
+ * the updated document; `doc.key` is "namespace.key".
+ *
+ * @param {Setting} doc  The updated Setting document.
+ */
+export async function onSettingUpdate(doc) {
+  if (!doc?.key?.startsWith("deathknell.")) return;
+  await syncScene();
 }
